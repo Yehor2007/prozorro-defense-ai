@@ -1,0 +1,60 @@
+# Two supported deployment modes:
+#
+# 1) Cheap VPS + OpenAI (no GPU, no local model):
+#    In .env set LLM_PROVIDER=openai and OPENAI_API_KEY=sk-...
+#    Just run: docker compose up -d
+#    (the `ollama` service below never starts — it's behind a profile)
+#
+# 2) GPU host running Ollama:
+#    In .env set LLM_PROVIDER=ollama
+#    Option A — Ollama as a sibling container on this same host:
+#      In .env set OLLAMA_HOST=http://ollama:11434 (Compose's internal DNS)
+#      Run: docker compose --profile local-llm up -d
+#      Then once: docker compose exec ollama ollama pull qwen2.5:14b-instruct
+#    Option B — Ollama already running on a separate GPU box:
+#      In .env set OLLAMA_HOST=http://<gpu-host-ip>:11434
+#      Run: docker compose up -d   (no need for the local ollama service)
+
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # *.duckdb + raw tender JSON, and the ChromaDB vector store — both
+      # must survive a container restart/rebuild, hence bind mounts to
+      # the host rather than being left inside the container's own layer.
+      - ./data:/app/data
+      - ./chroma_db:/app/chroma_db
+      # Without this, every fresh container re-downloads the ~2GB
+      # multilingual-e5-large embedding model from Hugging Face on first
+      # startup — slow always, and genuinely painful if HF's unauthenticated
+      # rate limit kicks in (observed live: download speed dropped to
+      # ~1.4MB/min mid-test). A named volume persists the model across
+      # container restarts/rebuilds so this only ever happens once per host.
+      - hf_cache:/root/.cache/huggingface
+
+  # Only starts with `docker compose --profile local-llm up` — see mode
+  # (2) above. Irrelevant (and left stopped) for the OpenAI-provider mode.
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    profiles: ["local-llm"]
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    # GPU passthrough — uncomment on a host with an NVIDIA GPU and the
+    # nvidia-container-toolkit installed:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+volumes:
+  ollama_data:
+  hf_cache:

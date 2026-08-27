@@ -1,0 +1,18 @@
+requests==2.34.2
+pandas==3.0.5
+duckdb==1.5.5
+chromadb==1.5.9
+sentence-transformers==6.0.0
+# Pinned explicitly, not left as a transitive dep of sentence-transformers:
+# 5.16.1 broke loading intfloat/multilingual-e5-large with a real crash
+# inside a freshly built Docker container (AutoProcessor.from_pretrained
+# raising "Unrecognized processing class") — 5.15.1 is the version
+# actually verified working, both locally and in a rebuilt container.
+transformers==5.15.1
+ollama==0.6.2
+sqlglot==30.17.0
+aiogram==3.30.0
+python-dotenv==1.2.3
+pytz==2026.3.post1
+openai==3.3.1
+apscheduler==3.11.3

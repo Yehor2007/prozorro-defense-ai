@@ -1,0 +1,25 @@
+# Secrets — never commit
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual environment
+venv/
+.venv/
+
+# Generated data — regenerate via extract_prozorro.py -> transform_prozorro.py -> load_chroma.py
+data/
+chroma_db/
+
+# Logs and one-off run status files
+*.log
+pipeline_status_overnight.txt
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
