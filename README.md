@@ -56,9 +56,7 @@ An anti-corruption investigative assistant for Ukrainian defense procurement dat
 
 ## Screenshots
 
-<!-- Insert screenshots below — e.g. the bot answering a Ukrainian-language question, an investigation-template result with evidence links, and the /schemes or /stats command output. -->
-
-![Bot answering a natural-language query](docs/screenshots/query-example.png)
+<!-- More screenshots welcome here — e.g. a plain lookup/analytics answer, or the /stats command output. -->
 
 ![Corruption-investigation template result with evidence links](docs/screenshots/investigation-example.png)
 
