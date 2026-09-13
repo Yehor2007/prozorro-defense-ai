@@ -193,6 +193,12 @@ SYSTEM_PROMPT = (
 # classifier — tune the list as real queries surface false routes.
 QUANT_KEYWORDS = [
     "скільки тендерів", "скільки закупівель", "скільки контрактів",
+    # "скільки всього"/"скільки загалом" catch phrasing like "скільки всього
+    # тендерів в базі" — a real production misroute: "скільки тендерів" is
+    # not a substring here because "всього" sits between the two words, so
+    # this fell through to vector search, which then reported its top_k
+    # retrieval count (5) as if it were the database total. See CONTEXT.md.
+    "скільки всього", "скільки загалом",
     "кількість", "сумарн", "загальна сума", "загальний бюджет",
     "середн", "медіан", "максимальн", "мінімальн",
     "найдорожч", "найдешевш", "найчастіше", "топ ", "топ-", "рейтинг",
